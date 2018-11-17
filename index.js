@@ -7,6 +7,8 @@ const fs = require('fs');
 
 client.on('ready', () => {
 	console.log(`Logged in as ${client.user.tag}!`);
+
+	client.user.setActivity(config.prefix + 'help');
 });
 
 client.on('message', msg => {
@@ -36,10 +38,14 @@ function writeToConfig(value, replaceValue) {
 	});
 }
 
+function loadFromConfig(){
+	config = require('./config.json');
+}
+
 function processCommand(msg) {
-	const fullCommand = msg.content.substr(config.prefix.length).toLowerCase();
+	const fullCommand = msg.content.substr(config.prefix.length); // Removes prefix
 	const splitCommand = fullCommand.split(' ');
-	const primaryCommand = splitCommand[0];
+	const primaryCommand = splitCommand[0].toLowerCase();
 	const arguments = splitCommand.slice(1, splitCommand.length);
 	msg.reply(arguments);
 
@@ -49,8 +55,9 @@ function processCommand(msg) {
 		break;
 	case 'prefix':
 		if(arguments.length == 1) {
-			config.prefix = arguments[0];
 			writeToConfig('prefix', arguments[0])
+			config.prefix = arguments[0];
+			client.user.setActivity(arguments[0] + 'help');
 			msg.reply('You\'ve changed the prefix to ' + arguments[0]);
 		}
 		else {
